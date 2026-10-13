@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "core_questions": [
+    "精神科住院儿童青少年出院后的复学/返校过渡面临哪些困难（学业、社交、情绪）？",
+    "哪些要素与支持（家庭、学校、医院、社区多方）能促进成功复学？",
+    "社会工作在「住院—出院—复学」链条中的干预路径与角色是什么？"
+  ],
+  "topics": [
+    {
+      "name": "school reentry",
+      "weight": 0.9,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "school reintegration",
+      "weight": 0.9,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "psychiatric hospitalization of children and adolescents",
+      "weight": 0.9,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "hospital-to-school transition",
+      "weight": 0.9,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "social work intervention in mental health",
+      "weight": 0.9,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "school refusal and attendance problems",
+      "weight": 0.8,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "discharge planning and post-discharge transition",
+      "weight": 0.8,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "inpatient experience and rights of hospitalized youth",
+      "weight": 0.8,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    },
+    {
+      "name": "family involvement and caregiver burden",
+      "weight": 0.8,
+      "source": "user_text",
+      "updated_at": "2026-10-13"
+    }
+  ],
+  "negative": [
+    "non-empirical commentaries and editorials"
+  ],
+  "tracked_authors_suggested": [],
+  "query_templates": [
+    "school reentry after psychiatric hospitalization",
+    "school reintegration following psychiatric hospitalization",
+    "return to school after adolescent psychiatric hospitalization",
+    "hospital to school transition adolescent psychiatric",
+    "school transition program psychiatric inpatient youth",
+    "social work intervention child adolescent mental health services",
+    "school social work mental health adolescent",
+    "school refusal adolescents mental health",
+    "school attendance problems adolescent psychiatric",
+    "adolescent psychiatric inpatient discharge transition family",
+    "post-discharge community reintegration adolescent mental health",
+    "child adolescent psychiatric inpatient experience",
+    "coercion restraint adolescent psychiatric inpatient",
+    "caregiver burden family involvement adolescent psychiatric hospitalization"
+  ],
+  "raw_description": "用户关注：精神科住院儿童青少年（psychiatrically hospitalized children & adolescents）出院后的复学/返校过渡（school reentry / school reintegration），以及社会工作（social work）在其中的干预路径。数据源是 Semantic Scholar / OpenAlex，检索词必须是英文；该领域较小且高度跨学科，检索词需兼顾精确与召回。",
+  "calibration_anchors": [
+    {
+      "paper_title": "Elements of Successful School Reentry After Psychiatric Hospitalization",
+      "s2id": "6e91f194e427a043e7dba11c77adf87ef4aec717",
+      "score": 9,
+      "note": "用户文献整理 Excel 中的种子文献（复学奠基研究）",
+      "source": "seed"
+    },
+    {
+      "paper_title": "Tough Transitions: Mental Health Care Professionals' Perception of the Psychiatric Hospital to School Transition",
+      "s2id": "bdd781d6cf0533a9b5e748c52868145d6c58894e",
+      "score": 9,
+      "note": "用户文献整理 Excel 中的种子文献（医院-学校过渡开山之作）",
+      "source": "seed"
+    },
+    {
+      "paper_title": "School Reintegration and Perceived Needs: The Perspectives of Child and Adolescent Patients During Psychiatric Hospitalization",
+      "s2id": "e0b12230f7ec726d7d46eb0f95ba6fa74e47328a",
+      "score": 9,
+      "note": "用户文献整理 Excel 中的种子文献（患儿视角的复学需求）",
+      "source": "seed"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "push": {
+    "time": "09:07",
+    "timezone": "Asia/Shanghai",
+    "count": 3
+  },
+  "mix": {
+    "recent": 2,
+    "classic": 1,
+    "tracked_author_extra": true
+  },
+  "taste": {
+    "paper_types": [
+      "empirical",
+      "review",
+      "intervention"
+    ],
+    "strictness": "wide",
+    "relevance_min": 7,
+    "novelty_min": 4
+  },
+  "filters": {
+    "h_index_min": 0
+  },
+  "profile_version": 1,
+  "llm": {
+    "base_url": "https://api.kimi.com/coding/v1",
+    "model": "k3-256k"
+  },
+  "email": {
+    "smtp_server": "smtp.163.com",
+    "smtp_port": 465
+  },
+  "pages_base": "",
+  "send_empty": true,
+  "sources": {
+    "fields_of_study": [
+      "Sociology",
+      "Psychology",
+      "Medicine"
+    ],
+    "new_pool_days": 30,
+    "new_pool_max_candidates": 30,
+    "classic_min_citations": 40,
+    "classic_per_keyword": 40,
+    "classic_candidates_per_keyword": 4
+  },
+  "tracked_authors": [],
+  "author_pool": {
+    "relevance_min": 5
+  },
+  "domain": {
+    "setup_completed": true
+  }
+}

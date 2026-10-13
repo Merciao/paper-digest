@@ -1,0 +1,43 @@
+name: 每日论文推送
+
+on:
+  schedule:
+    # 北京时间每天 09:07（UTC 01:07）。推送时间可在 python configure.py 菜单里改，
+    # 菜单会同步更新本文件的 cron（改成后需 git push 生效）。
+    # 注意：多账号共用这个统一 cron（单 job 顺序跑所有账号，不用 matrix——S2 限流会互相撞），
+    # 账号的推送时间偏好仅作记录，不单独生成调度。
+    - cron: "7 1 * * *"
+  workflow_dispatch:      # 允许在 Actions 页面手动触发测试
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      - name: 运行推送（单/多账号自动判定：存在 users/ 则逐账号顺序跑）
+        env:
+          MOONSHOT_API_KEY: ${{ secrets.MOONSHOT_API_KEY }}
+          S2_KEY: ${{ secrets.S2_KEY }}
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+          FERNET_KEY: ${{ secrets.FERNET_KEY }}
+        run: python main.py
+
+      - name: 提交账本、账号登记与概览页
+        run: |
+          git config user.name "paper-bot"
+          git config user.email "paper-bot@users.noreply.github.com"
+          # 单用户模式：data/；多账号模式：users/*/data 账本 + 加密登记表；概览页全账号共享 docs/
+          git add data/pushed.json data/rejected.json docs/ \
+                  "users/**/data/pushed.json" "users/**/data/rejected.json" \
+                  users/registry.json.enc 2>/dev/null || true
+          git commit -m "更新推送账本与概览页 $(date -u +%F)" || echo "无变化"
+          git push

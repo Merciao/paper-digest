@@ -1,0 +1,8 @@
+.env
+__pycache__/
+data/preview.html
+data/candidates_cache_*.json
+# 多账号模式：缓存与预览不进仓库（账本与加密登记表要进）
+users/*/data/candidates_cache_*.json
+users/*/data/preview.html
+users/registry.json
