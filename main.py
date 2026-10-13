@@ -671,21 +671,45 @@ def repo_base(settings):
     return f"https://github.com/{m.group(1)}/{m.group(2)}" if m else ""
 
 
-def settings_links_html(settings):
-    """手机端设置入口：直达 GitHub 上本账号配置文件的编辑页 + 反馈 Issue"""
+def _config_urls(settings):
+    """本账号配置文件在 GitHub 上的编辑/反馈链接（repo 未配置时返回空）"""
     repo = repo_base(settings)
     if not repo:
-        return ""
+        return None
     if ws.is_account_mode():
         rel = ws.base_dir().relative_to(ws.ROOT).as_posix() + "/config"
     else:
         rel = "config"
-    settings_url = f"{repo}/edit/main/{rel}/settings.json"
-    profile_url = f"{repo}/edit/main/{rel}/interest_profile.json"
-    issue_url = f"{repo}/issues/new?" + quote("title=推送反馈：", safe="=&")
-    return (f'<a href="{settings_url}">⚙️ 推送设置</a> · '
-            f'<a href="{profile_url}">🧠 兴趣画像</a> · '
-            f'<a href="{issue_url}">✉️ 反馈提需求</a>')
+    return {
+        "settings": f"{repo}/edit/main/{rel}/settings.json",
+        "profile": f"{repo}/edit/main/{rel}/interest_profile.json",
+        "issue": f"{repo}/issues/new?" + quote("title=推送反馈：", safe="=&"),
+    }
+
+
+def settings_links_html(settings):
+    """网页页脚用：文字链接组"""
+    urls = _config_urls(settings)
+    if not urls:
+        return ""
+    return (f'<a href="{urls["settings"]}">⚙️ 推送设置</a> · '
+            f'<a href="{urls["profile"]}">🧠 兴趣画像</a> · '
+            f'<a href="{urls["issue"]}">✉️ 反馈提需求</a>')
+
+
+def email_buttons_html(settings):
+    """邮件底部用：醒目的按钮行（手机/电脑通用）"""
+    urls = _config_urls(settings)
+    if not urls:
+        return ""
+    btn = ("display:inline-block;margin:4px 6px;padding:8px 18px;border:1px solid #1a5fb4;"
+           "border-radius:999px;color:#1a5fb4;text-decoration:none;font-size:13px;background:#fff;")
+    return f"""<div style="text-align:center;margin:26px 0 10px;">
+  <div style="font-size:12px;color:#999;margin-bottom:8px;">— 点这里，随时调整你的推送 —</div>
+  <a href="{urls['settings']}" style="{btn}">⚙️ 推送设置</a>
+  <a href="{urls['profile']}" style="{btn}">🧠 兴趣画像</a>
+  <a href="{urls['issue']}" style="{btn}">✉️ 反馈提需求</a>
+</div>"""
 
 
 # ---------- 邮件 ----------
@@ -723,7 +747,8 @@ def render_email(picked, settings):
   <span style="color:#999;font-size:13px;margin-left:10px;">{today} · 今日 {len(picked)} 篇</span>
 </div>
 {body}
-<p style="color:#bbb;font-size:12px;text-align:center;margin-top:24px;">画像 v{settings.get('profile_version', '?')}{' · ' + settings_links_html(settings) if settings_links_html(settings) else ''}</p>
+{email_buttons_html(settings)}
+<p style="color:#bbb;font-size:12px;text-align:center;margin-top:10px;">画像 v{settings.get('profile_version', '?')} · 由你的论文推送 Agent 生成</p>
 </body></html>"""
 
 
