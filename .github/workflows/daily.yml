@@ -12,6 +12,8 @@ on:
 jobs:
   push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 机器人需要回写账本与概览页
     steps:
       - uses: actions/checkout@v4
 
