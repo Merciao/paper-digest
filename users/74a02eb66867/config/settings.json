@@ -31,7 +31,7 @@
     "smtp_server": "smtp.163.com",
     "smtp_port": 465
   },
-  "pages_base": "",
+  "pages_base": "https://qiufu66-crypto.github.io/paper-digest",
   "send_empty": true,
   "sources": {
     "fields_of_study": [
