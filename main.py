@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import random
+import re
 import smtplib
 import ssl
 import sys
@@ -23,6 +24,7 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 from html import escape
 from pathlib import Path
+from urllib.parse import quote
 
 import requests
 
@@ -623,14 +625,14 @@ def write_overview_page(settings, paper):
 {f'<a href="{paper["pdf"]}">原文 PDF</a>' if paper["pdf"] else ''}
 <a href="{paper['url']}">原文页面（DOI）</a>
 </div>
-<footer>论文推送 Agent · {date.today().isoformat()} · 画像 v{settings.get('profile_version', '?')}<br><a href="../index.html">全部推送存档</a></footer>
+<footer>论文推送 Agent · {date.today().isoformat()} · 画像 v{settings.get('profile_version', '?')}<br><a href="../index.html">全部推送存档</a>{' · ' + settings_links_html(settings) if settings_links_html(settings) else ''}</footer>
 </body></html>"""
     path = DOCS_DIR / "papers" / f"{paper['id']}.html"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(html, encoding="utf-8")
 
 
-def rebuild_index():
+def rebuild_index(settings=None):
     pages = sorted((DOCS_DIR / "papers").glob("*.html"),
                    key=lambda p: p.stat().st_mtime, reverse=True)
     items = []
@@ -639,12 +641,15 @@ def rebuild_index():
         t0, t1 = text.find("<title>") + 7, text.find("</title>")
         title = text[t0:t1] if t0 > 6 and t1 > t0 else pg.stem
         items.append(f'<li><a href="papers/{pg.name}">{title}</a></li>')
+    links = settings_links_html(settings) if settings else ""
+    footer = f"<footer>{links}</footer>" if links else ""
     html = f"""<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>论文推送存档</title><style>{PAGE_CSS}</style></head><body>
 <div class="kicker">DAILY PAPER DIGEST</div>
 <h1 class="zh">论文推送存档</h1>
 <div class="meta">按推送时间倒序 · 共 {len(items)} 篇</div>
 <ul class="archive">{''.join(items)}</ul>
+{footer}
 </body></html>"""
     (DOCS_DIR / "index.html").write_text(html, encoding="utf-8")
 
@@ -654,6 +659,33 @@ def overview_link(settings, paper):
     if base:
         return f"{base}/papers/{paper['id']}.html"
     return f"../docs/papers/{paper['id']}.html"
+
+
+def repo_base(settings):
+    """GitHub 仓库地址：repo_url 显式配置优先，否则从 pages_base 推导"""
+    url = (settings.get("repo_url") or "").rstrip("/")
+    if url:
+        return url
+    base = (settings.get("pages_base") or "").rstrip("/")
+    m = re.match(r"https://([A-Za-z0-9-]+)\.github\.io/([^/]+)", base)
+    return f"https://github.com/{m.group(1)}/{m.group(2)}" if m else ""
+
+
+def settings_links_html(settings):
+    """手机端设置入口：直达 GitHub 上本账号配置文件的编辑页 + 反馈 Issue"""
+    repo = repo_base(settings)
+    if not repo:
+        return ""
+    if ws.is_account_mode():
+        rel = ws.base_dir().relative_to(ws.ROOT).as_posix() + "/config"
+    else:
+        rel = "config"
+    settings_url = f"{repo}/edit/main/{rel}/settings.json"
+    profile_url = f"{repo}/edit/main/{rel}/interest_profile.json"
+    issue_url = f"{repo}/issues/new?" + quote("title=推送反馈：", safe="=&")
+    return (f'<a href="{settings_url}">⚙️ 推送设置</a> · '
+            f'<a href="{profile_url}">🧠 兴趣画像</a> · '
+            f'<a href="{issue_url}">✉️ 反馈提需求</a>')
 
 
 # ---------- 邮件 ----------
@@ -691,7 +723,7 @@ def render_email(picked, settings):
   <span style="color:#999;font-size:13px;margin-left:10px;">{today} · 今日 {len(picked)} 篇</span>
 </div>
 {body}
-<p style="color:#bbb;font-size:12px;text-align:center;margin-top:24px;">画像 v{settings.get('profile_version', '?')} · 调整方向/篇数/偏好：python configure.py</p>
+<p style="color:#bbb;font-size:12px;text-align:center;margin-top:24px;">画像 v{settings.get('profile_version', '?')}{' · ' + settings_links_html(settings) if settings_links_html(settings) else ''}</p>
 </body></html>"""
 
 
@@ -761,7 +793,7 @@ def run_pipeline(dry_run, receiver=""):
         write_overview_page(settings, p)
         time.sleep(1)
     if picked:
-        rebuild_index()
+        rebuild_index(settings)
 
     html = render_email(picked, settings)
     subject = f"📖 每日论文推送 {date.today().isoformat()}（{len(picked)} 篇）"
