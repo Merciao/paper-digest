@@ -42,4 +42,6 @@ jobs:
                   "users/**/data/pushed.json" "users/**/data/rejected.json" \
                   users/registry.json.enc 2>/dev/null || true
           git commit -m "更新推送账本与概览页 $(date -u +%F)" || echo "无变化"
+          # 运行期间可能有代码提交（人工推送），先同步远端再回写，避免 fetch first 冲突
+          git pull --rebase
           git push
