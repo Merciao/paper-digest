@@ -38,10 +38,11 @@ jobs:
           git config user.name "paper-bot"
           git config user.email "paper-bot@users.noreply.github.com"
           # 单用户模式：data/；多账号模式：users/*/data 账本 + 加密登记表；概览页全账号共享 docs/
-          git add data/pushed.json data/rejected.json docs/ \
-                  "users/**/data/pushed.json" "users/**/data/rejected.json" \
-                  users/registry.json.enc 2>/dev/null || true
+          # 用 git add -A：精确 pathspec 在路径不存在时会原子失败（什么都不暂存）；
+          # 缓存与预览文件已被 .gitignore 排除，不会进仓库
+          git add -A
           git commit -m "更新推送账本与概览页 $(date -u +%F)" || echo "无变化"
-          # 运行期间可能有代码提交（人工推送），先同步远端再回写，避免 fetch first 冲突
-          git pull --rebase
+          # 运行期间可能有代码提交（人工推送），先同步远端再回写，避免 fetch first 冲突；
+          # --autostash 兜底工作区未暂存改动（有改动时裸 rebase 会被拒绝）
+          git pull --rebase --autostash
           git push

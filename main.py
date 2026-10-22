@@ -133,7 +133,7 @@ def s2_request(method, url, api_key, retries=6, **kwargs):
 def s2_tolerant(method, url, api_key, **kwargs):
     try:
         return s2_request(method, url, api_key, **kwargs)
-    except requests.HTTPError as e:
+    except requests.RequestException as e:
         print(f"  请求失败（{e}），跳过")
         return {}
 
@@ -763,7 +763,8 @@ def send_email(settings, subject, html, receiver=""):
     msg["From"] = formataddr(("论文推送 Agent", sender))
     msg["To"] = receiver
     ctx = ssl.create_default_context()
-    with smtplib.SMTP_SSL(settings["email"]["smtp_server"], settings["email"]["smtp_port"], context=ctx) as smtp:
+    with smtplib.SMTP_SSL(settings["email"]["smtp_server"], settings["email"]["smtp_port"],
+                          context=ctx, timeout=60) as smtp:
         smtp.login(sender, password)
         smtp.sendmail(sender, [receiver], msg.as_string())
     print(f"邮件已发送至 {receiver}")
